@@ -36,4 +36,14 @@ LEVELS = [
         "kill_y": 700,
         "goal_x": 1190,
     },
+    {
+        "name": "Gale Force",
+        "budget": 14000,
+        "deck_y": 450,
+        "start_platform": (20, 120),
+        "end_platform": (1160, 1260),
+        "anchors": [(120, 530), (120, 610), (1160, 530), (1160, 610)],
+        "kill_y": 700,
+        "goal_x": 1210,
+    },
 ]

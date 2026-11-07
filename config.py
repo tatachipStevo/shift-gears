@@ -15,13 +15,17 @@ CONSTRAINT_ITERS = 24   # solver passes per frame; more = stiffer, slower
 # --- GEARS: the SHIFT theme. The world changes mid-crossing. ---
 # gravity multiplies base gravity, friction scales the car's acceleration.
 GEARS = [
-    {"name": "1st · DRIVE", "gravity": 1.0, "friction": 1.0,  "color": (80, 200, 120)},
-    {"name": "2nd · HEAVY", "gravity": 1.7, "friction": 1.0,  "color": (240, 200, 80)},
-    {"name": "3rd · ICE",   "gravity": 1.0, "friction": 0.05, "color": (120, 200, 240)},
+    {"name": "1st · DRIVE", "gravity": 1.0,  "friction": 1.0,  "color": (80, 200, 120)},
+    {"name": "2nd · HEAVY", "gravity": 1.7,  "friction": 1.0,  "color": (240, 200, 80)},
+    {"name": "3rd · ICE",   "gravity": 1.0,  "friction": 0.05, "color": (120, 200, 240)},
+    {"name": "4th · GALE",  "gravity": 0.55, "friction": 0.3,  "color": (200, 120, 240)},
 ]
+# GALE: low gravity, floaty and bouncy, brakes half-asleep. The car
+# goes light on the final stretch — a flat deck matters more than ever.
 # Gears shift by DISTANCE, not time: at these fractions of the crossing,
 # so every run hits every gear no matter how fast or slow the car is.
-GEAR_SHIFT_POINTS = (0.34, 0.67)
+# One shift point per gear after the first: len(points) == len(GEARS) - 1.
+GEAR_SHIFT_POINTS = (0.25, 0.50, 0.75)
 
 # --- Materials ---
 WOOD  = {"name": "Wood",  "max_strain": 0.030, "cost_per_px": 8,  "width": 7, "color": (170, 115, 65)}

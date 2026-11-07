@@ -129,6 +129,11 @@ class Game:
                 best, bd = j, d
         return best
 
+    @staticmethod
+    def level_btn_x(i):
+        # Level buttons sit right-aligned; 40px pitch, 30px wide.
+        return C.SCREEN_W - 12 - len(LEVELS) * 40 + i * 40
+
     @property
     def spent(self):
         return sum(b.cost for b in self.bridge_beams)
@@ -363,7 +368,7 @@ class Game:
         mat = "Wood [1]" if self.material == "wood" else "Steel [2]"
         txt(self.screen, mat, 560, 12, 24, (170, 200, 255))
         for i in range(len(LEVELS)):
-            x = C.SCREEN_W - 140 + i * 40
+            x = self.level_btn_x(i)
             c = (90, 200, 130) if i == self.level_idx else (70, 75, 95)
             pygame.draw.rect(self.screen, c, (x, 8, 30, 28), border_radius=6)
             txt(self.screen, str(i + 1), x + 10, 12, 22)
@@ -389,11 +394,14 @@ class Game:
     def draw_test_hud(self):
         pygame.draw.rect(self.screen, (10, 12, 20), (0, 0, C.SCREEN_W, 44))
         txt(self.screen, f"TEST — {LEVELS[self.level_idx]['name']}", 12, 12, 24)
+        # Gear chips sized to fit however many gears exist.
+        w, gap = 114, 8
+        x0 = C.SCREEN_W - len(C.GEARS) * (w + gap) - 12
         for i, g in enumerate(C.GEARS):
-            x = C.SCREEN_W - 380 + i * 122
+            x = x0 + i * (w + gap)
             active = i == self.gear_idx
             col = g["color"] if active else (60, 65, 80)
-            pygame.draw.rect(self.screen, col, (x, 8, 114, 28), border_radius=6,
+            pygame.draw.rect(self.screen, col, (x, 8, w, 28), border_radius=6,
                              width=0 if active else 2)
             txt(self.screen, g["name"], x + 8, 13, 19,
                 (10, 12, 20) if active else (150, 155, 170))
@@ -433,7 +441,7 @@ class Game:
                     if self.mode == "build" and e.pos[1] > 44:
                         handled = False
                         for i in range(len(LEVELS)):
-                            x = C.SCREEN_W - 140 + i * 40
+                            x = self.level_btn_x(i)
                             if x <= e.pos[0] <= x + 30 and 8 <= e.pos[1] <= 36:
                                 self.load_level(i)
                                 handled = True
@@ -451,8 +459,19 @@ class Game:
         pygame.quit()
 
     def run_selftest(self):
-        """Headless playthrough: auto-build a wood truss, run the test."""
-        lv = LEVELS[0]
+        """Headless playthrough: auto-build a wood truss, run the test.
+        --selftest-all plays every level in turn."""
+        import sys
+        idxs = range(len(LEVELS)) if "--selftest-all" in sys.argv else [self.level_idx]
+        all_won = True
+        for idx in idxs:
+            self.load_level(idx)
+            all_won = self._selftest_level() and all_won
+        pygame.quit()
+        return all_won
+
+    def _selftest_level(self):
+        lv = LEVELS[self.level_idx]
         dy = lv["deck_y"]
         s1 = lv["start_platform"][1]
         e0 = lv["end_platform"][0]
@@ -486,15 +505,14 @@ class Game:
             self.update_test(1.0 / 60.0)
             frames += 1
         r = self.result or {}
-        print(f"SELFTEST mode={self.mode} frames={frames} "
-              f"won={r.get('won')} gears={r.get('gears')} why={r.get('why')}")
-        pygame.quit()
+        print(f"SELFTEST level={self.level_idx + 1} {lv['name']} mode={self.mode} "
+              f"frames={frames} won={r.get('won')} gears={r.get('gears')} why={r.get('why')}")
         return r.get("won", False)
 
 
 def main():
     import sys
-    Game(selftest="--selftest" in sys.argv).run()
+    Game(selftest=("--selftest" in sys.argv or "--selftest-all" in sys.argv)).run()
 
 
 if __name__ == "__main__":

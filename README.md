@@ -6,8 +6,9 @@ drive across while the world **shifts gears** under it:
 - **1st · DRIVE** — normal gravity, full grip
 - **2nd · HEAVY** — 1.7× gravity, everything strains
 - **3rd · ICE** — nearly zero friction, the car slides
+- **4th · GALE** — low gravity, floaty and bouncy, sleepy brakes
 
-Your bridge has to survive all three. Beat the budget for a bonus ⭐.
+Your bridge has to survive all four. Beat the budget for a bonus ⭐.
 
 ## Run it
 
@@ -36,7 +37,15 @@ python -m venv .venv
 - **Add a level** → copy a dict in `levels.py`. Set the gap (`deck_y`,
   platform spans), the `budget`, and a few `anchors` on the cliffs.
 - **Add a gear** → append to `GEARS` in `config.py`. Name, gravity,
-  friction, color. The HUD and shifting logic pick it up automatically.
+  friction, color. The HUD and shifting logic pick it up automatically —
+  just add one shift point to `GEAR_SHIFT_POINTS` per new gear.
+
+## Test it headless
+
+```bash
+.venv/bin/python main.py --selftest        # play Level 1, no window
+.venv/bin/python main.py --selftest-all    # play every level
+```
 
 ## How it works (30 seconds)
 
